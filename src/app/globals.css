@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-fredoka);
   --font-mono: var(--font-geist-mono);
+
+  --color-lilac: #d8c8ff;
+  --color-rose: #ffc8dd;
+  --color-sky: #bde0fe;
+  --color-mint: #c1f5d6;
+  --color-peach: #ffd8b5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Bloques reutilizables ---------- */
+@utility card {
+  @apply rounded-[2rem] bg-white/85 p-6 shadow-[0_18px_45px_-20px_rgba(124,92,214,0.35)] ring-1 ring-white/80 backdrop-blur-sm;
+}
+
+@utility glass {
+  @apply rounded-[2rem] bg-white/55 p-8 shadow-[0_30px_70px_-25px_rgba(124,92,214,0.45)] ring-1 ring-white/80 backdrop-blur-2xl;
+}
+
+@utility lift {
+  @apply transition duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_60px_-22px_rgba(124,92,214,0.5)] motion-reduce:transition-none motion-reduce:hover:translate-y-0;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold transition duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-200 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none;
+}
+
+@utility btn-primary {
+  @apply btn bg-linear-to-r from-violet-300 via-pink-300 to-orange-200 text-slate-900 shadow-[0_12px_28px_-10px_rgba(236,112,170,0.6)] hover:-translate-y-0.5 hover:shadow-[0_18px_34px_-10px_rgba(236,112,170,0.7)];
+}
+
+@utility btn-secondary {
+  @apply btn bg-white/90 text-slate-800 ring-1 ring-slate-200/80 hover:-translate-y-0.5 hover:bg-white hover:shadow-md;
+}
+
+@utility title-gradient {
+  @apply bg-linear-to-r from-violet-600 via-pink-500 to-orange-400 bg-clip-text text-transparent;
+}
+
+/* ---------- Animaciones ---------- */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.6;
+  animation: blob-float 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes blob-float {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, -50px) scale(1.12); }
+  66% { transform: translate(-40px, 40px) scale(0.92); }
+  100% { transform: translate(30px, 20px) scale(1.05); }
+}
+
+.float-soft {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob,
+  .float-soft {
+    animation: none;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

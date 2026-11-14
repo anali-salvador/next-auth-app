@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NextAuth App
 
-## Getting Started
+Proyecto del Laboratorio 13: una app en Next.js donde puedes iniciar sesión con Google, con GitHub o con tu propio email y contraseña. El dashboard y el perfil solo se pueden ver si has iniciado sesión.
 
-First, run the development server:
+## Qué hace
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Inicio de sesión con **Google** y **GitHub** (OAuth).
+- **Registro** con nombre, email y contraseña, e inicio de sesión con esas credenciales.
+- Las contraseñas se guardan cifradas con **bcrypt**.
+- Si alguien falla la contraseña **5 veces**, la cuenta se bloquea **15 minutos**.
+- Sesiones con **JWT**. El dashboard muestra con qué proveedor entraste.
+- `/dashboard` y `/profile` están protegidas por el middleware.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tecnologías
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Next.js (App Router) · TypeScript · NextAuth.js v4 · Prisma · PostgreSQL (Supabase) · bcryptjs · Tailwind CSS · react-icons
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cómo correrlo
 
-## Learn More
+1. Instala las dependencias (esto también genera el cliente de Prisma):
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Copia `.env.example` a `.env.local` y completa los valores (ver abajo).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Crea la tabla de usuarios en la base de datos. Prisma no lee `.env.local` por defecto, así que se le pasa con Node:
 
-## Deploy on Vercel
+   ```bash
+   node --env-file=.env.local node_modules/prisma/build/index.js db push
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Levanta el servidor de desarrollo:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   npm run dev
+   ```
+
+   La app queda en http://localhost:3001.
+
+## Variables de entorno
+
+| Variable | Para qué sirve |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Credenciales OAuth de Google Cloud Console |
+| `GITHUB_ID` / `GITHUB_SECRET` | Credenciales de una OAuth App de GitHub |
+| `NEXTAUTH_URL` | URL de la app (`http://localhost:3001`) |
+| `NEXTAUTH_SECRET` | Clave para firmar los JWT. Se puede generar con `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` |
+| `DATABASE_URL` | Conexión a PostgreSQL (pooler de Supabase) |
+| `DIRECT_URL` | Conexión directa, usada por Prisma para crear las tablas |
+
+URLs de callback para configurar en cada proveedor:
+
+- Google: `http://localhost:3001/api/auth/callback/google`
+- GitHub: `http://localhost:3001/api/auth/callback/github`
