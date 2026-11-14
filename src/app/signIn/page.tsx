@@ -2,7 +2,7 @@
 
 import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { PiEnvelopeSimpleDuotone, PiLockKeyDuotone, PiSignInDuotone } from "react-icons/pi";
 import Alert from "@/components/Alert";
@@ -20,8 +20,9 @@ function RegisteredNotice() {
   );
 }
 
+const GENERIC_ERROR = "No se pudo iniciar sesión, intenta de nuevo";
+
 export default function SignInPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -31,13 +32,18 @@ export default function SignInPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const res = await signIn("credentials", { email, password, redirect: false });
-    setLoading(false);
-    if (!res || res.error) {
-      setError(res?.error ?? "Credenciales inválidas");
-      return;
+    try {
+      const res = await signIn("credentials", { email, password, redirect: false });
+      if (res?.ok && !res.error) {
+        window.location.assign("/dashboard");
+        return;
+      }
+      setError(res?.error || GENERIC_ERROR);
+    } catch {
+      setError(GENERIC_ERROR);
+    } finally {
+      setLoading(false);
     }
-    router.push("/dashboard");
   }
 
   return (
